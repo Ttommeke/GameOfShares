@@ -14,27 +14,35 @@
     <!-- Add your content here -->
     
     <script type="module">
-        import { createApp } from 'https://unpkg.com/petite-vue?module'
+        import PocketBase from './pocketbase.es.mjs';
+        import { createApp } from './petite-vue.es.js'
+        
+        const pb = new PocketBase('http://127.0.0.1:8090');
       
         createApp({
             // exposed to all expressions
-            count: 0,
+            companies: [],
             // getters
             get plusOne() {
                 return this.count + 1
             },
             // methods
-            increment() {
-                this.count++
+            async refresh() {
+                const companies = await pb.collection('companies').getFullList({
+                    sort: '-created',
+                });
+
+                this.companies = companies;
             }
-        }).mount()
+        }).mount();
     </script>
       
     <!-- v-scope value can be omitted -->
-    <div v-scope>
-        <p>{{ count }}</p>
-        <p>{{ plusOne }}</p>
-        <button @click="increment">increment</button>
+    <div v-scope @vue:mounted="refresh()">
+        <div v-for="company in companies">
+            {{company.name}}
+        </div>
+        <button @click="refresh()">refresh</button>
     </div>
 </body>
 </html>
