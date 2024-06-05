@@ -28,6 +28,10 @@
         import { createApp } from './petite-vue.es.js'
         
         const pb = new PocketBase('http://127.0.0.1:8090');
+
+        if (pb.authStore.model == null) {
+            window.location.replace("/login.html");
+        }
       
         createApp({
             // exposed to all expressions

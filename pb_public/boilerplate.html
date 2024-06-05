@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameOfShares</title>
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+<body>
+    <h1>Welcome bij Kazou banking</h1>
+    
+    <!-- Add your content here -->
+    
+    <script type="module">
+        import PocketBase from './pocketbase.es.mjs';
+        import { createApp } from './petite-vue.es.js'
+        
+        const pb = new PocketBase('http://127.0.0.1:8090');
+
+        console.log(pb.authStore.model);
+      
+        createApp({
+            // exposed to all expressions
+            message: "hello"
+        }).mount();
+    </script>
+      
+        
+    <div v-scope>
+        {{message}}
+    </div>
+  
+</body>
+</html>

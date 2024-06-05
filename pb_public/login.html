@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameOfShares</title>
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+<body>
+    <h1>Welcome bij Kazou banking</h1>
+    
+    <!-- Add your content here -->
+    
+    <script type="module">
+        import PocketBase from './pocketbase.es.mjs';
+        import { createApp } from './petite-vue.es.js'
+        
+        const pb = new PocketBase('http://127.0.0.1:8090');
+
+        console.log(pb.authStore.model);
+      
+        createApp({
+            // exposed to all expressions
+            username: '',
+            password: '',
+            error: null,
+            currentUser: pb.authStore.model,
+            async login() {
+                try {
+                    let result = await pb.collection('users').authWithPassword(this.username, this.password);
+                } catch (ex) {
+                    this.error = 'Er ging iets mis bij het inloggen. Probeer het opnieuw.'
+                }
+
+                this.currentUser = pb.authStore.model;
+            },
+            async logout() {
+                pb.authStore.clear(); 
+
+                this.currentUser = pb.authStore.model;
+            },
+            goToHome() {
+                window.location.replace("/");
+            }
+        }).mount();
+    </script>
+      
+        
+    <div v-scope>
+        <div v-if="currentUser == null">
+            <div v-if="error">{{error}}</div>
+            <input type="text" v-model="username"/>
+            <input type="password" v-model="password"/>
+            <button @click="login()">Login</button>
+        </div>
+        <div v-if="currentUser != null">
+            Hello {{currentUser.username}}
+
+            <button @click="goToHome()">Open Bank</button>
+            <button @click="logout()">Logout</button>
+        </div>
+    </div>
+  
+</body>
+</html>
