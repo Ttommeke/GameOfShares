@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Mobile-Friendly Webpage</title>
+    <title>GameOfShares</title>
     <style>
         /* Add your custom styles here */
+
+        .CompanyValue {
+            border: 1px solid black;
+            padding: 3px;
+            margin-top: 20px;
+        }
+        .Company{
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to My Mobile-Friendly Webpage</h1>
+    <h1>Welcome bij Kazou banking</h1>
     
     <!-- Add your content here -->
     
@@ -19,6 +29,7 @@
         createApp({
             // exposed to all expressions
             count: 0,
+            CompanyValue: 100,
             // getters
             get plusOne() {
                 return this.count + 1
@@ -26,15 +37,30 @@
             // methods
             increment() {
                 this.count++
+            },
+            buy(){
+                this.CompanyValue + 10
             }
         }).mount()
     </script>
       
     <!-- v-scope value can be omitted -->
     <div v-scope>
-        <p>{{ count }}</p>
+        <p class="myValue">{{ ShareValue }}</p>
+        <p class="myValue">{{ CashValue }}</p>
+        <p class="CompanyValue">{{ CompanyValue }}</p>
+        <p style="background-color: blue;">{{ count }}</p>
+        <p style="background-color: rgb(255, 0, 255);">{{ count }}</p>
         <p>{{ plusOne }}</p>
         <button @click="increment">increment</button>
+        <div class="Company">
+            <h1>name</h1>
+            <p class="CompanyValue">{{ CompanyValue }}</p>
+            <button @click="koop">buy</button>
+            <button @click="verkoop">sell</button>
+        </div>
+        
     </div>
+  
 </body>
 </html>
