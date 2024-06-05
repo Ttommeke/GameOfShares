@@ -32,6 +32,7 @@
     
     <script type="module">
         import PocketBase from './pocketbase.es.mjs';
+        import { companySharePrice, buyCompanyShare, sellCompanyShare } from './stockmarket.js'
         import { createApp } from './petite-vue.es.js'
         
         const pb = new PocketBase('http://127.0.0.1:8090');
@@ -40,38 +41,51 @@
             window.location.replace("/login.html");
         }
       
-        createApp({
+        let x = createApp({
             // exposed to all expressions
             ShareValue: 111,
             CashValue: 10222,
+            currentUser: pb.authStore.model,
             companies: [],
             // methods
-            async refresh() {
-                const companies = await pb.collection('companies').getFullList({
-                    sort: '-created',
-                });
+            start() {
+                let handler = async () => {
+                    const companies = await pb.collection('companies').getFullList({
+                        sort: '-created',
+                    });
 
-                this.companies = companies;
+                    this.currentUser = await pb.collection('users').getOne(pb.authStore.model.id);
+
+                    this.companies = companies; 
+                }
+
+                setInterval(handler, 1000);
+            },
+            shareCompanyPrice(company) {
+                return companySharePrice(company)
             },
             buy(company){
-                company.value = company.value + 10
+                buyCompanyShare(pb, company)
+            },
+            sell(company){
+                sellCompanyShare(pb, company)
             }
         }).mount();
     </script>
       
         
     <div v-scope>
-        <button @click="refresh()">refresh</button>
+        <button @click="start()">refresh</button>
         <span class="titleValue">Eigen vermogen</span>
         <p class="myValue">{{ ShareValue }}</p>
         <span class="titleValue">Cash</span>
-        <p class="myValue">{{ CashValue }}</p>
+        <p class="myValue">{{ currentUser.cash }}</p>
         <span class="titleValue">Aandeelmarkt</span>
         <div class="Company" v-for="company in companies">
             <span>{{company.name}}</span>
-            {{ company.value }} $
+            {{ shareCompanyPrice(company) }} $
             <button @click="buy(company)">buy</button>
-            <button @click="verkoop">sell</button>  
+            <button @click="sell(company)">sell</button>  
         </div>
     </div>
   
