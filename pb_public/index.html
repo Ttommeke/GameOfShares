@@ -7,12 +7,19 @@
     <style>
         /* Add your custom styles here */
 
-        .CompanyValue {
-            border: 1px solid black;
-            padding: 3px;
-            margin-top: 20px;
+        .myValue {
+            border: 2px solid black;
+            text-align: center;
+            font-size: 25px;
+        }
+        .titleValue {
+            font-size: 35px;
         }
         .Company{
+            font-size: 25px;
+            border: 2px solid black;
+            margin-top: 10px;
+            padding: 5px;
             display: flex;
             justify-content: space-between;
         }
@@ -55,14 +62,16 @@
         
     <div v-scope>
         <button @click="refresh()">refresh</button>
+        <span class="titleValue">Eigen vermogen</span>
         <p class="myValue">{{ ShareValue }}</p>
+        <span class="titleValue">Cash</span>
         <p class="myValue">{{ CashValue }}</p>
-        <p>{{ plusOne }}</p>
+        <span class="titleValue">Aandeelmarkt</span>
         <div class="Company" v-for="company in companies">
-            <h1>{{ company.name }}</h1>
-            <p class="CompanyValue">{{ company.value }}</p>
+            <span>{{company.name}}</span>
+            {{ company.value }} $
             <button @click="buy(company)">buy</button>
-            <button @click="verkoop">sell</button>
+            <button @click="verkoop">sell</button>  
         </div>
     </div>
   
