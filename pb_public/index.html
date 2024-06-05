@@ -39,7 +39,7 @@
                 this.count++
             },
             buy(){
-                this.CompanyValue + 10
+                this.CompanyValue = this.CompanyValue + 10
             }
         }).mount()
     </script>
@@ -56,7 +56,7 @@
         <div class="Company">
             <h1>name</h1>
             <p class="CompanyValue">{{ CompanyValue }}</p>
-            <button @click="koop">buy</button>
+            <button @click="buy()">buy</button>
             <button @click="verkoop">sell</button>
         </div>
         
