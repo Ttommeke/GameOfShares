@@ -31,6 +31,8 @@
       
         createApp({
             // exposed to all expressions
+            ShareValue: 111,
+            CashValue: 10222,
             companies: [],
             // methods
             async refresh() {
@@ -40,7 +42,7 @@
 
                 this.companies = companies;
             },
-            buy(){
+            buy(company){
                 company.value = company.value + 10
             }
         }).mount();
@@ -51,11 +53,7 @@
         <button @click="refresh()">refresh</button>
         <p class="myValue">{{ ShareValue }}</p>
         <p class="myValue">{{ CashValue }}</p>
-        <p class="CompanyValue">{{ CompanyValue }}</p>
-        <p style="background-color: blue;">{{ count }}</p>
-        <p style="background-color: rgb(255, 0, 255);">{{ count }}</p>
         <p>{{ plusOne }}</p>
-        <button @click="increment">increment</button>
         <div class="Company" v-for="company in companies">
             <h1>{{ company.name }}</h1>
             <p class="CompanyValue">{{ company.value }}</p>
