@@ -32,7 +32,7 @@
     
     <script type="module">
         import PocketBase from './pocketbase.es.mjs';
-        import { companySharePrice, buyCompanyShare, sellCompanyShare } from './stockmarket.js'
+        import { companySharePrice, buyCompanyShare, sellCompanyShare, getUserWithShares } from './stockmarket.js'
         import { createApp } from './petite-vue.es.js'
         
         const pb = new PocketBase('http://127.0.0.1:8090');
@@ -47,28 +47,61 @@
             CashValue: 10222,
             currentUser: pb.authStore.model,
             companies: [],
+            buying: false,
+            selling: false,
             // methods
-            start() {
+            async start() {
                 let handler = async () => {
                     const companies = await pb.collection('companies').getFullList({
                         sort: '-created',
                     });
 
-                    this.currentUser = await pb.collection('users').getOne(pb.authStore.model.id);
-
                     this.companies = companies; 
                 }
 
+                await this.refreshUser();
+
                 setInterval(handler, 1000);
+            },
+            async refreshUser() {
+                let user = await getUserWithShares(pb);
+                console.log(user);
+                this.currentUser = user;
+            },
+            numberOfShares(company) {
+                let shares = this.currentUser.shares;
+
+                let share = shares.filter(share => share.company == company.id);
+
+                if (share == null || share.length == 0) {
+                    return 0;
+                } else {
+                    return share[0].amount
+                }
             },
             shareCompanyPrice(company) {
                 return companySharePrice(company)
             },
-            buy(company){
-                buyCompanyShare(pb, company)
+            async buy(company){
+                this.buying = true;
+                try {
+                    await buyCompanyShare(pb, company)
+                    await this.refreshUser();
+                } catch (err) {
+                    console.log(err);
+                }
+                this.buying = false;
             },
-            sell(company){
-                sellCompanyShare(pb, company)
+            async sell(company){
+                this.selling = true;
+                try {
+                    await sellCompanyShare(pb, company)
+                    await this.refreshUser();
+                } catch (err) {
+                    console.log(err);
+                }
+                
+                this.selling = false;
             }
         }).mount();
     </script>
@@ -83,9 +116,12 @@
         <span class="titleValue">Aandeelmarkt</span>
         <div class="Company" v-for="company in companies">
             <span>{{company.name}}</span>
-            {{ shareCompanyPrice(company) }} $
-            <button @click="buy(company)">buy</button>
-            <button @click="sell(company)">sell</button>  
+            <span>{{numberOfShares(company)}}/{{company.totalshares}}</span>
+            <span>{{ shareCompanyPrice(company) }} $</span>
+            <button v-if="!buying" @click="buy(company)">buy</button>
+            <button v-if="buying" disabled>buy</button>
+            <button v-if="!selling" @click="sell(company)">sell</button>  
+            <button v-if="selling" disabled>sell</button>  
         </div>
     </div>
   

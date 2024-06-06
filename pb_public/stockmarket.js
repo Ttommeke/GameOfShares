@@ -8,11 +8,21 @@ export function companySharePrice(company) {
     return companyTotalValue(company) / company.totalshares;
 }
 
-export async function buyCompanyShare(pb, company) {
+export async function getUserWithShares(pb) {
     let user = await pb.collection('users').getOne(pb.authStore.model.id)
+
+    let shares = await pb.collection('shares').getFullList({ expand: 'user', filter: ('user = "' + user.id + '"') })
+
+    user.shares = shares;
+
+    return user;
+}
+
+export async function buyCompanyShare(pb, company) {
+    let user = await getUserWithShares(pb)
     let price = companySharePrice(company);
 
-    let shares = await pb.collection('shares').getFullList({ expand: 'user', filter: ('user = "' + user.id + '" && company = "' + company.id + '"') })
+    let shares = user.shares;
 
     let share = shares.length > 0 ? shares[0] : null;
 
@@ -41,10 +51,10 @@ export async function buyCompanyShare(pb, company) {
 }
 
 export async function sellCompanyShare(pb, company) {
-    let user = pb.authStore.model;
+    let user = await getUserWithShares(pb)
     let price = companySharePrice(company);
 
-    let shares = await pb.collection('shares').getFullList({ expand: 'user', filter: ('user = "' + user.id + '" && company = "' + company.id + '"') })
+    let shares = user.shares;
 
     let share = shares.length > 0 ? shares[0] : null;
 
