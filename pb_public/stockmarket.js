@@ -4,10 +4,6 @@ export function companyTotalValue(company) {
     return company.totalshares*baseRate + company.value;
 }
 
-export function companySharePrice(company) {
-    return companyTotalValue(company) / company.totalshares;
-}
-
 export async function getUserWithShares(pb) {
     let user = await pb.collection('users').getOne(pb.authStore.model.id)
 
@@ -18,20 +14,27 @@ export async function getUserWithShares(pb) {
     return user;
 }
 
+export async function getTotalNumberOfSharesForCompany(pb, company) {
+
+    let shares = await pb.collection('shares').getFullList({ filter: ('company = "' + company.id + '"') })
+
+    let totalAmount = shares.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.amount,
+        0
+    );
+
+    return totalAmount;
+}
+
 export async function buyCompanyShare(pb, company) {
     let user = await getUserWithShares(pb)
-    let price = companySharePrice(company);
+    let price = company.shareprice;
 
-    let shares = user.shares;
-
+    let shares = user.shares.filter(x => x.company == company.id);
     let share = shares.length > 0 ? shares[0] : null;
 
     if (user.cash >= price) {
         await pb.collection('users').update(user.id, { cash: user.cash - price });
-        await pb.collection('companies').update(company.id, { 
-            value: company.value + (price - baseRate),
-            totalshares: company.totalshares + 1
-        });
 
         if (share == null) {
             await pb.collection('shares').create( {
@@ -52,18 +55,13 @@ export async function buyCompanyShare(pb, company) {
 
 export async function sellCompanyShare(pb, company) {
     let user = await getUserWithShares(pb)
-    let price = companySharePrice(company);
+    let price = company.shareprice;
 
-    let shares = user.shares;
-
+    let shares = user.shares.filter(x => x.company == company.id);
     let share = shares.length > 0 ? shares[0] : null;
 
     if (share.amount > 0) {
         await pb.collection('users').update(user.id, { cash: user.cash + price });
-        await pb.collection('companies').update(company.id, { 
-            value: company.value * (company.totalshares - 1) / company.totalshares,
-            totalshares: company.totalshares - 1
-        });
        
         await pb.collection('shares').update(share.id, {
             "amount": share.amount - 1

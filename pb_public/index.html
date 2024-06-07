@@ -32,7 +32,7 @@
     
     <script type="module">
         import PocketBase from './pocketbase.es.mjs';
-        import { companySharePrice, buyCompanyShare, sellCompanyShare, getUserWithShares } from './stockmarket.js'
+        import { buyCompanyShare, sellCompanyShare, getUserWithShares, getTotalNumberOfSharesForCompany } from './stockmarket.js'
         import { createApp } from './petite-vue.es.js'
         
         const pb = new PocketBase('http://127.0.0.1:8090');
@@ -49,14 +49,22 @@
             companies: [],
             buying: false,
             selling: false,
+            started: false,
             // methods
             async start() {
+                this.started = true;
                 let handler = async () => {
                     const companies = await pb.collection('companies').getFullList({
                         sort: '-created',
                     });
 
+
+                    for (let i = 0; i < companies.length; i++) {
+                        companies[i].totalnumberofshares = await getTotalNumberOfSharesForCompany(pb, companies[i])
+                    }
+
                     this.companies = companies; 
+
                 }
 
                 await this.refreshUser();
@@ -65,7 +73,6 @@
             },
             async refreshUser() {
                 let user = await getUserWithShares(pb);
-                console.log(user);
                 this.currentUser = user;
             },
             numberOfShares(company) {
@@ -108,16 +115,18 @@
       
         
     <div v-scope>
-        <button @click="start()">refresh</button>
         <span class="titleValue">Eigen vermogen</span>
         <p class="myValue">{{ ShareValue }}</p>
         <span class="titleValue">Cash</span>
         <p class="myValue">{{ currentUser.cash }}</p>
         <span class="titleValue">Aandeelmarkt</span>
+        
+        <button @click="start()" v-if="!started">Start Live View</button>
+        
         <div class="Company" v-for="company in companies">
             <span>{{company.name}}</span>
-            <span>{{numberOfShares(company)}}/{{company.totalshares}}</span>
-            <span>{{ shareCompanyPrice(company) }} $</span>
+            <span>{{numberOfShares(company)}}/{{company.totalnumberofshares}}</span>
+            <span>{{ company.shareprice }} $</span>
             <button v-if="!buying" @click="buy(company)">buy</button>
             <button v-if="buying" disabled>buy</button>
             <button v-if="!selling" @click="sell(company)">sell</button>  
