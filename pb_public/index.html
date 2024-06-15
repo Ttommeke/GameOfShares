@@ -119,7 +119,7 @@
         
     <div v-scope>
         <span class="titleValue">Eigen vermogen</span>
-        <p class="myValue">{{ netWorth() }}</p>
+        <p class="myValue">{{ netWorth().toFixed(2) }}</p>
         <span class="titleValue">Cash</span>
         <p class="myValue">{{ currentUser.cash.toFixed(2) }}</p>
         <span class="titleValue">Aandeelmarkt</span>
