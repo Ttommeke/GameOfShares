@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameOfShares</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <script src="./bootstrap.js"></script>
     <style>
         /* Add your custom styles here */
 
@@ -127,9 +129,9 @@
             <span>{{company.name}}</span>
             <span>{{numberOfShares(company)}}/{{company.totalnumberofshares}}</span>
             <span>{{ company.shareprice }} $</span>
-            <button v-if="!buying" @click="buy(company)">buy</button>
+            <button v-if="!buying" @click="buy(company)" class="btn btn-primary">buy</button>
             <button v-if="buying" disabled>buy</button>
-            <button v-if="!selling" @click="sell(company)">sell</button>  
+            <button v-if="!selling" @click="sell(company)" class="btn btn-primary">sell</button>  
             <button v-if="selling" disabled>sell</button>  
         </div>
     </div>
