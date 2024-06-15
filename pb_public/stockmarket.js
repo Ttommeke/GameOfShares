@@ -1,11 +1,21 @@
 const baseRate = 1000
 
+export async function getCompaniesWithTotalShares(pb) {
+    let companies = await pb.collection('companies').getFullList({
+        sort: '-created',
+    });
+    
+    for (let i = 0; i < companies.length; i++) {
+        companies[i].shareprice = companies[i].shareprice
+        companies[i].totalnumberofshares = await getTotalNumberOfSharesForCompany(pb, companies[i]);
+        companies[i].totalvalue = (companies[i].totalnumberofshares * companies[i].shareprice)
+    }
+
+    return companies;
+} 
+
 export function isAdmin(user) {
     return user.admin
-}
-
-export function companyTotalValue(company) {
-    return company.totalshares*baseRate + company.value;
 }
 
 export async function getUserWithShares(pb) {

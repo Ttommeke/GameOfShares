@@ -10,28 +10,81 @@
         /* Add your custom styles here */
     </style>
 </head>
-<body>
-    <h1>Welcome bij Kazou banking</h1>
+<body class="container">
+    <h1>Kazou Banking Add Money</h1>
     
     <!-- Add your content here -->
     
     <script type="module">
         import PocketBase from './pocketbase.es.mjs';
         import { createApp } from './petite-vue.es.js'
+
+        import { getCompaniesWithTotalShares } from './stockmarket.js'
         
         const pb = new PocketBase('http://127.0.0.1:8090');
 
-        console.log(pb.authStore.model);
-      
-        createApp({
-            // exposed to all expressions
-            message: "hello"
-        }).mount();
+        if (pb.authStore.model.admin) {
+            createApp({
+                // exposed to all expressions
+                started: false,
+                companies: [],
+                syncing: false,
+                async refresh() {
+                    this.started = true;
+                    let handler = async () => {
+                        const companies = await getCompaniesWithTotalShares(pb)
+
+                        this.companies = companies; 
+
+                    }
+
+                    setInterval(handler, 1000);
+                },
+                async changeCompanyBalance(company, value) {
+                    this.syncing = true;
+                    let totalShares = company.totalnumberofshares;
+                    if (totalShares == 0) {
+                        totalShares = 1
+                    }
+                    
+                    await pb.collection('companies').update(company.id, {
+                        "shareprice": (company.totalvalue + value) / totalShares
+                    });
+
+                    this.syncing = false;
+                }
+            }).mount();
+        } else {
+            window.location.replace("/");
+        }
     </script>
       
         
     <div v-scope>
-        {{message}}
+        <button class="btn btn-primary w-100" v-if="!started" @click="refresh()">Refresh</button>
+        <div v-for="company in companies">
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>{{company.name}}</h5>
+                </div>
+                <div class="card-body">
+                    <h3>Totale Waarde: {{company.totalvalue}}</h3>
+                    <p class="card-text">Voeg waarde toe of verminder de waarde van dit bedrijf met.</p>
+                    <button v-if="syncing" disabled class="btn btn-lg btn-danger" @click="changeCompanyBalance(company, -100)">- $100</button>
+                    <button v-if="!syncing" class="btn btn-lg btn-danger" @click="changeCompanyBalance(company, -100)">- $100</button>
+                    <button v-if="syncing" disabled class="btn btn-lg btn-danger" @click="changeCompanyBalance(company, -10)">- $10</button>
+                    <button v-if="!syncing" class="btn btn-lg btn-danger" @click="changeCompanyBalance(company, -10)">- $10</button>
+                    <button v-if="syncing" disabled class="btn btn-lg btn-danger" @click="changeCompanyBalance(company, -1)">- $1</button>
+                    <button v-if="!syncing" class="btn btn-lg btn-danger" @click="changeCompanyBalance(company, -1)">- $1</button>
+                    <button v-if="syncing" disabled class="btn btn-lg btn-success" @click="changeCompanyBalance(company, +1)">+ $1</button>
+                    <button v-if="!syncing" class="btn btn-lg btn-success" @click="changeCompanyBalance(company, 1)">+ $1</button>
+                    <button v-if="syncing" disabled class="btn btn-lg btn-success" @click="changeCompanyBalance(company, +10)">+ $10</button>
+                    <button v-if="!syncing" class="btn btn-lg btn-success" @click="changeCompanyBalance(company, 10)">+ $10</button>
+                    <button v-if="syncing" disabled class="btn btn-lg btn-success" @click="changeCompanyBalance(company, +100)">+ $100</button>
+                    <button v-if="!syncing" class="btn btn-lg btn-success" @click="changeCompanyBalance(company, 100)">+ $100</button>
+                </div>
+              </div>
+        </div>
     </div>
   
 </body>
