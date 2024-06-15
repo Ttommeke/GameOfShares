@@ -1,5 +1,9 @@
 const baseRate = 1000
 
+export function isAdmin(user) {
+    return user.admin
+}
+
 export function companyTotalValue(company) {
     return company.totalshares*baseRate + company.value;
 }
