@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <h1>Welcome bij Kazou banking</h1>
+    
     
     <!-- Add your content here -->
     
@@ -52,16 +52,30 @@
         
     <div v-scope>
         <div v-if="currentUser == null">
+            
             <div v-if="error">{{error}}</div>
-            <input type="text" v-model="username"/>
-            <input type="password" v-model="password"/>
-            <button @click="login()">Login</button>
+            <div class="card">
+                <h5 class="card-header">Welcome bij Kazou bank</h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Username</label>
+                        <input type="text" class="form-control" v-model="username"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Password</label>
+                        <input type="password" class="form-control" v-model="password"/>
+                    </div>
+                    <button @click="login()" class="btn btn-primary" >Login</button>
+                </div>
+              </div>
         </div>
+        
         <div v-if="currentUser != null">
-            Hello {{currentUser.username}}
-
-            <button @click="goToHome()">Open Bank</button>
-            <button @click="logout()">Logout</button>
+            <h5 class="card-header">Hello {{currentUser.username}}</h5>
+            <div class="d-grid gap-2">
+                <button @click="goToHome()" class="btn btn-primary">Open Bank</button>
+                <button @click="logout()"class="btn btn-primary">Logout</button>
+              </div>
         </div>
     </div>
   
