@@ -81,6 +81,14 @@
                     return share[0].amount
                 }
             },
+            netWorth(){
+                let shareWorth = 0;
+                for (let i = 0; i < this.companies.length; i++) {
+                    let company = this.companies[i];
+                        shareWorth = shareWorth + this.numberOfShares(company) * company.shareprice;
+                    }
+                return shareWorth + this.currentUser.cash    
+            },
             shareCompanyPrice(company) {
                 return companySharePrice(company)
             },
@@ -111,7 +119,7 @@
         
     <div v-scope>
         <span class="titleValue">Eigen vermogen</span>
-        <p class="myValue">{{ ShareValue }}</p>
+        <p class="myValue">{{ netWorth() }}</p>
         <span class="titleValue">Cash</span>
         <p class="myValue">{{ currentUser.cash.toFixed(2) }}</p>
         <span class="titleValue">Aandeelmarkt</span>
@@ -121,11 +129,14 @@
         <div class="Company" v-for="company in companies">
             <span>{{company.name}}</span>
             <span>{{numberOfShares(company)}}/{{company.totalnumberofshares}}</span>
+
             <span>{{ company.shareprice.toFixed(2) }} $</span>
-            <button v-if="!buying" @click="buy(company)" class="btn btn-primary">buy</button>
-            <button v-if="buying" disabled>buy</button>
-            <button v-if="!selling" @click="sell(company)" class="btn btn-primary">sell</button>  
-            <button v-if="selling" disabled>sell</button>  
+            <div class="d-grid gap-2 d-md-block"></div>
+                <button v-if="!buying" @click="buy(company)" class="btn btn-primary btn btn-success ">buy</button>
+                <button v-if="buying" disabled>buy</button>
+                <button v-if="!selling" @click="sell(company)" class="btn btn-primary btn btn-danger">sell</button>  
+                <button v-if="selling" disabled>sell</button>  
+            </div>
         </div>
     </div>
   
