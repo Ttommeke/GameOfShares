@@ -6,4 +6,4 @@ RUN  apt-get update \
 
 COPY . .
 
-CMD [ "./pocketbase_linux", "serve" ]
+CMD [ "./pocketbase_linux", "serve", "--http", "0.0.0.0:80" ]
