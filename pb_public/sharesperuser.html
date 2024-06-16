@@ -21,7 +21,9 @@
         
         const pb = new PocketBase('http://127.0.0.1:8090');
 
-        console.log(pb.authStore.model);
+        if (pb.authStore.model == null) {
+            window.location.replace("/login.html");
+        }
       
         createApp({
             // exposed to all expressions
@@ -55,8 +57,6 @@
                     });
 
                 });
-                
-                console.log(users);
 
                 this.users = users;
                 this.companies = companies;

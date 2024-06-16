@@ -118,26 +118,42 @@
       
         
     <div v-scope>
-        <span class="titleValue">Eigen vermogen</span>
-        <p class="myValue">{{ netWorth().toFixed(2) }}</p>
-        <span class="titleValue">Cash</span>
-        <p class="myValue">{{ currentUser.cash.toFixed(2) }}</p>
-        <span class="titleValue">Aandeelmarkt</span>
-        
-        <button @click="start()" v-if="!started">Start Live View</button>
-        
-        <div class="Company" v-for="company in companies">
-            <span>{{company.name}}</span>
-            <span>{{numberOfShares(company)}}/{{company.totalnumberofshares}}</span>
+        <div v-if="started">
+            <div class="card mt-4">
+                <div class="card-header text-center">
+                    <h5>Eigen vermogen</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div>
+                        <h4>${{ currentUser.cash.toFixed(2) }}</h4>
+                        <span>(Totaal: ${{ netWorth().toFixed(2) }})</span>
+                    </div>
+                </div>
+            </div>
 
-            <span>{{ company.shareprice.toFixed(2) }} $</span>
-            <div class="d-grid gap-2 d-md-block"></div>
-                <button v-if="!buying" @click="buy(company)" class="btn btn-primary btn btn-success ">buy</button>
-                <button v-if="buying" disabled>buy</button>
-                <button v-if="!selling" @click="sell(company)" class="btn btn-primary btn btn-danger">sell</button>  
-                <button v-if="selling" disabled>sell</button>  
+
+        </div>
+
+        <div class="mt-4">
+            <h2>Aandeelmarkt</h2>
+        
+            <button class="btn btn-primary w-100" @click="start()" v-if="!started">Start Live Trading</button>
+            
+            <div class="Company" v-for="company in companies">
+                <span>{{company.name}}</span>
+                <span>{{numberOfShares(company)}}/{{company.totalnumberofshares}}</span>
+
+                <span>{{ company.shareprice.toFixed(2) }} $</span>
+                <div class="d-grid gap-2 d-md-block"></div>
+                    <button v-if="!buying" @click="buy(company)" class="btn btn-primary btn btn-success ">buy</button>
+                    <button v-if="buying" disabled>buy</button>
+                    <button v-if="!selling" @click="sell(company)" class="btn btn-primary btn btn-danger">sell</button>  
+                    <button v-if="selling" disabled>sell</button>  
+                </div>
             </div>
         </div>
+        
+        
     </div>
   
 </body>
