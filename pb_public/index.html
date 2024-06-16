@@ -37,7 +37,7 @@
         import { buyCompanyShare, sellCompanyShare, getUserWithShares, getTotalNumberOfSharesForCompany, getCompaniesWithTotalShares } from './stockmarket.js'
         import { createApp } from './petite-vue.es.js'
         
-        const pb = new PocketBase('http://127.0.0.1:8090');
+        const pb = new PocketBase();
 
         if (pb.authStore.model == null) {
             window.location.replace("/login.html");
