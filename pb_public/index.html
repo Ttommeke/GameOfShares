@@ -126,7 +126,7 @@
                 <div class="card-body text-center">
                     <div>
                         <h4>${{ currentUser.cash.toFixed(2) }}</h4>
-                        <span>(Totaal: ${{ netWorth().toFixed(2) }})</span>
+                        <span>Totaal vermogen: ${{ netWorth().toFixed(2) }}</span>
                     </div>
                 </div>
             </div>
@@ -139,16 +139,25 @@
         
             <button class="btn btn-primary w-100" @click="start()" v-if="!started">Start Live Trading</button>
             
-            <div class="Company" v-for="company in companies">
-                <span>{{company.name}}</span>
-                <span>{{numberOfShares(company)}}/{{company.totalnumberofshares}}</span>
+            <div class="card mt-4" v-for="company in companies">
+                <div class="card-header text-center">
+                    <h5>{{company.name}}</h5>
+                </div>
+                <div class="card-body text-center">
 
-                <span>{{ company.shareprice.toFixed(2) }} $</span>
-                <div class="d-grid gap-2 d-md-block"></div>
-                    <button v-if="!buying" @click="buy(company)" class="btn btn-primary btn btn-success ">buy</button>
-                    <button v-if="buying" disabled>buy</button>
-                    <button v-if="!selling" @click="sell(company)" class="btn btn-primary btn btn-danger">sell</button>  
-                    <button v-if="selling" disabled>sell</button>  
+
+                    <h4>${{ company.shareprice.toFixed(2) }}</h4>
+                    <p>
+                        Jij hebt <b>{{numberOfShares(company)}}</b> van de <b>{{company.totalnumberofshares}}</b> aandelen, 
+                        oftewel <b>{{(numberOfShares(company)*100/company.totalnumberofshares).toFixed(2)}} %</b> van alle aandelen in handen. 
+                        Dit geeft je een totaal vermogen van <b>${{(numberOfShares(company)*company.shareprice).toFixed(2)}}</b>
+                    </p>
+                </div>
+                <div class="card-footer text-center">
+                    <button v-if="!buying" @click="buy(company)" class="btn btn-primary btn btn-success ">Koop 1</button>
+                    <button v-if="buying" disabled>Koop 1</button>
+                    <button v-if="!selling" @click="sell(company)" class="btn btn-primary btn btn-danger">Verkoop 1</button>  
+                    <button v-if="selling" disabled>Verkoop 1</button>  
                 </div>
             </div>
         </div>

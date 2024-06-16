@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameOfShares</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <script src="./bootstrap.js"></script>
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+<body class="container">
+    <h1>Kazou Banking Bedrijfs Overzicht</h1>
+    
+    <!-- Add your content here -->
+    
+    <script type="module">
+        import PocketBase from './pocketbase.es.mjs';
+        import { createApp } from './petite-vue.es.js'
+
+        import { getCompaniesWithTotalShares } from './stockmarket.js'
+        
+        const pb = new PocketBase('http://127.0.0.1:8090');
+
+        if (pb.authStore.model == null) {
+            window.location.replace("/login.html");
+        }
+
+        if (pb.authStore.model.admin) {
+            createApp({
+                // exposed to all expressions
+                started: false,
+                companies: [],
+                syncing: false,
+                async refresh() {
+                    this.started = true;
+                    let handler = async () => {
+                        const companies = await getCompaniesWithTotalShares(pb)
+
+                        this.companies = companies; 
+
+                    }
+
+                    setInterval(handler, 1000);
+                },
+                async changeCompanyBalance(company, value) {
+                    this.syncing = true;
+                    let totalShares = company.totalnumberofshares;
+                    if (totalShares == 0) {
+                        totalShares = 1
+                    }
+
+                    await pb.collection('companies').update(company.id, {
+                        "shareprice": (company.totalvalue + value) / totalShares
+                    });
+
+                    this.syncing = false;
+                }
+            }).mount();
+        } else {
+            window.location.replace("/");
+        }
+    </script>
+      
+        
+    <div v-scope>
+        <button class="btn btn-primary w-100" v-if="!started" @click="refresh()">Refresh</button>
+        <div v-for="company in companies">
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>{{company.name}}</h5>
+                </div>
+                <div class="card-body">
+                    <h3>Totale Waarde: {{company.totalvalue.toFixed(2)}}</h3>
+                </div>
+              </div>
+        </div>
+    </div>
+  
+</body>
+</html>
