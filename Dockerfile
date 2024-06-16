@@ -2,4 +2,4 @@ FROM ubuntu
 
 COPY . .
 
-CMD [ "./pocketbase_linux" ]
+CMD [ "./pocketbase_linux", "serve" ]
